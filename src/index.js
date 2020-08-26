@@ -1,9 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { ApolloClient } from 'apollo-client';
+import { ApolloLink } from 'apollo-link';
 import { HttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { ApolloProvider } from 'react-apollo';
+import { onError } from 'apollo-link-error';
 
 import './style.css'; 
 import App from './App/index';
@@ -19,10 +21,22 @@ const httpLink = new HttpLink({
   }
 });
 
+const errorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors) {
+    // do something
+  }
+
+  if (networkError) {
+    // do something
+  }
+});
+
+const link = ApolloLink.from([errorLink, httpLink]);
+
 const cache = new InMemoryCache();
 
 const client = new ApolloClient({
-  link: httpLink,
+  link,
   cache
 });
 
